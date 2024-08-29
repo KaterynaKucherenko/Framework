@@ -1,6 +1,6 @@
 package com.mjc.school.service.services;
 
-import com.mjc.school.repository.model.User;
+import com.mjc.school.repository.model.UserModel;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
@@ -52,9 +52,9 @@ public class JwtTokenService implements Serializable {
 
     public String generateToken(UserDetails userDetails){
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User userModelDetails) {
-            claims.put("id", userModelDetails.getId());
-            claims.put("role", userModelDetails.getRole());}
+        if (userDetails instanceof UserModel userModelModelDetails) {
+            claims.put("id", userModelModelDetails.getId());
+            claims.put("role", userModelModelDetails.getRole());}
         return generateToken(claims, userDetails.getUsername());
     }
 

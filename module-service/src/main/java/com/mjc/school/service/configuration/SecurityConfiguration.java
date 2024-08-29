@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,11 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +29,6 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        //отключаем Cross-Site Request Forgery
         http = http.cors().and().csrf().disable();
 
         http = http
@@ -42,26 +36,21 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and();
 
+        http.authorizeRequests()
+                .antMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
+                .antMatchers("/sign-in", "/sign-up").permitAll()
+                .antMatchers(HttpMethod.GET).permitAll()
+                .antMatchers(HttpMethod.POST).hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.PATCH).hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE).hasAuthority("ADMIN")
+                .anyRequest().authenticated();
 
-                //настраиваем правила авторизации
-                http.authorizeHttpRequests(request -> {
-                    try {
-                        request
-                                .antMatchers("/signup", "/login").permitAll()
-                                .antMatchers(HttpMethod.GET, "/api/author").permitAll()
-                                .antMatchers("/user/**").hasAnyAuthority("USER", "ADMIN")
-                                .antMatchers("/admin/**").hasAuthority("ADMIN")
-                                .anyRequest().authenticated()
-                                .and()
-                                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                                .authenticationProvider(authenticationProvider())
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }});
+
+        http.authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
-                }
-
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

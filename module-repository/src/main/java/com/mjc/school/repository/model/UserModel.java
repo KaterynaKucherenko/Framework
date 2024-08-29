@@ -2,7 +2,6 @@ package com.mjc.school.repository.model;
 
 
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +18,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User implements UserDetails {
+public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -57,7 +56,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     public boolean equals(Object obj) {
@@ -67,11 +66,11 @@ public class User implements UserDetails {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
-        User user = (User) obj;
-        return id == user.id &&
-                (username == user.username || (username != null && username.equals(user.getUsername()))) &&
-                (password == user.password || (password != null && password.equals(user.getPassword()))) &&
-                (role == user.role || (role != null && role.equals(user.getRole())));
+        UserModel userModel = (UserModel) obj;
+        return id == userModel.id &&
+                (username == userModel.username || (username != null && username.equals(userModel.getUsername()))) &&
+                (password == userModel.password || (password != null && password.equals(userModel.getPassword()))) &&
+                (role == userModel.role || (role != null && role.equals(userModel.getRole())));
     }
 
     public int hashCode() {

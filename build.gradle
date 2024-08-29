@@ -41,12 +41,12 @@ subprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.7.7'
         testImplementation "org.springframework:spring-test:$springVersion"
         testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.7'
-        implementation group: 'org.springframework.security', name: 'spring-security-core', version: '2.7.7'
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.7'
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '2.7.7', ext: 'pom'
 
         implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
         implementation group: 'org.springframework.security', name: 'spring-security-config', version: '2.7.7'
+        implementation group: 'org.springframework.security', name: 'spring-security-core', version: '2.7.7'
 
         implementation 'org.postgresql:postgresql:42.6.0'
 

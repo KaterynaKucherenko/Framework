@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create an author", response = AuthorDtoResponse.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created an author"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -91,6 +94,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update an author", response = AuthorDtoResponse.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated an author"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -108,6 +112,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete author by ID")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted author by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -66,6 +67,7 @@ public class TagsController implements BaseController<TagDtoRequest, TagDtoRespo
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a tag", response = TagDtoResponse.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created a tag"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -82,6 +84,7 @@ public class TagsController implements BaseController<TagDtoRequest, TagDtoRespo
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update a tag", response = TagDtoResponse.class)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated a tag"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -98,6 +101,7 @@ public class TagsController implements BaseController<TagDtoRequest, TagDtoRespo
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete tag by ID")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted tag by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),

@@ -6,7 +6,7 @@ import com.mjc.school.repository.model.UserModel;
 import com.mjc.school.service.dtoForUser.JwtAuthenticationResponse;
 import com.mjc.school.service.dtoForUser.SignInRequest;
 import com.mjc.school.service.dtoForUser.SignUpRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +17,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
+        this.authenticationManager = authenticationManager;
+    }
 
     @Transactional
     public UserModel save(UserModel userModel) {
@@ -39,22 +46,15 @@ public class UserService {
 
     }
 
-    public UserModel getByUsername(String username) {
-
-        if (!userRepository.existsByUsername(username)) {
-            throw new UsernameNotFoundException("User " + username + " not found");
-        }
-        return userRepository.findByUsername(username);
-    }
 
     public UserDetailsService userDetailsService() {
-        return this::getByUsername;
+        return (UserDetailsService) this;
     }
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        UserModel userModel = UserModel.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
+        var userModel = UserModel.builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.ROLE_USER)
                 .build();
         this.create(userModel);
@@ -64,26 +64,39 @@ public class UserService {
 
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
+        System.out.println("Authenticating user: " + request.username());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
+                request.username(),
+                request.password()
         ));
 
-        var user = this.userDetailsService().loadUserByUsername(request.getUsername());
+        var user = this.userDetailsService().loadUserByUsername(request.username());
         var jwt = jwtTokenService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
 
 
-
     public UserModel getCurrentUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+        return getUserByUsername(username);
     }
+
+    private UserModel getUserByUsername(String username) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new UsernameNotFoundException("User " + username + " not found");
+        }
+        return userRepository.findByUsername(username);
+    }
+
     public void getAdmin() {
         var user = getCurrentUser();
         user.setRole(Role.ROLE_ADMIN);
         save(user);
     }
-
 }
+
+
+
+
+
+

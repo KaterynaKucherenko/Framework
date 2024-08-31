@@ -1,7 +1,11 @@
 package com.mjc.school.repository.model;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,25 +57,55 @@ public class UserModel implements UserDetails {
         return true;
     }
 
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        UserModel userModel = (UserModel) obj;
-        return id == userModel.id &&
-                (username == userModel.username || (username != null && username.equals(userModel.getUsername()))) &&
-                (password == userModel.password || (password != null && password.equals(userModel.getPassword()))) &&
-                (role == userModel.role || (role != null && role.equals(userModel.getRole())));
-    }
+//    public boolean equals(Object obj) {
+//        if (obj == this) {
+//            return true;
+//        }
+//        if (obj == null || obj.getClass() != this.getClass()) {
+//            return false;
+//        }
+//        UserModel userModel = (UserModel) obj;
+//        return id == userModel.id &&
+//                (username == userModel.username || (username != null && username.equals(userModel.getUsername()))) &&
+//                (password == userModel.password || (password != null && password.equals(userModel.getPassword()))) &&
+//                (role == userModel.role || (role != null && role.equals(userModel.getRole())));
+//    }
 
     public int hashCode() {
         return Objects.hash(id, username, password, role);

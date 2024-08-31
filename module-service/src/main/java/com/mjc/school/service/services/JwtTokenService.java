@@ -20,55 +20,64 @@ public class JwtTokenService implements Serializable {
     private final String SECRET_KEY = "secret";
 
 
-//validate token
-    public boolean isTokenValid(String token, UserDetails userDetails){
-      final String username = getUsernameFromToken(token);
+    //validate token
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-// fetch username from token
+    // fetch username from token
     public String getUsernameFromToken(String token) {
         return getClaimsFromToken(token, Claims::getSubject);
     }
-//Проверка токена на просроченность
-    public Boolean isTokenExpired(String token){
+
+    //Проверка токена на просроченность
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-//Извлечение даты истечения токена
+    //Извлечение даты истечения токена
     private Date getExpirationDateFromToken(String token) {
         return getClaimsFromToken(token, Claims::getExpiration);
     }
-// Извлечение данных из токена
-    public <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver){
+
+    // Извлечение данных из токена
+    public <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
-//Извлечение всех данных из токена
+
+    //Извлечение всех данных из токена
     public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof UserModel userModelModelDetails) {
             claims.put("id", userModelModelDetails.getId());
-            claims.put("role", userModelModelDetails.getRole());}
-        return generateToken(claims, userDetails.getUsername());
+            claims.put("role", userModelModelDetails.getRole());
+        }
+        String token = generateToken(claims, userDetails.getUsername());
+        System.out.println("Generated Token: " + token);
+        return token;
+
     }
 
     private String generateToken(Map<String, Object> claims, String subject) {
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + JWT_TOKEN_VALIDITY * 1000);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 }
-
 
 
 

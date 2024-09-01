@@ -52,25 +52,32 @@ public class UserService {
     }
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        var userModel = UserModel.builder()
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .role(Role.ROLE_USER)
-                .build();
-        this.create(userModel);
-        var jwt = jwtTokenService.generateToken(userModel);
-        return new JwtAuthenticationResponse(jwt);
-    }
+        UserModel userModel = null;
+        if (userRepository.findByUsername(request.username())!=null) {
+            throw new UsernameNotFoundException("User " + request.username() + " already exist");}
+            userModel = UserModel.builder()
+                    .username(request.username())
+                    .password(passwordEncoder.encode(request.password()))
+                    .role(Role.ROLE_USER)
+                    .build();
+            this.create(userModel);
+            var jwt = jwtTokenService.generateToken(userModel);
+            return new JwtAuthenticationResponse(jwt);
+        }
+
 
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
+        if (userRepository.findByUsername(request.username())==null){
+            throw new UsernameNotFoundException("User " + request.username() + " not found");
+        }
         System.out.println("Authenticating user: " + request.username());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()
         ));
 
-        var user = this.userDetailsService().loadUserByUsername(request.username());
+        var user = userRepository.findByUsername(request.username());
         var jwt = jwtTokenService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }

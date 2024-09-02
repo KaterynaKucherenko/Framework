@@ -93,19 +93,6 @@ public class UserModel implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-//    public boolean equals(Object obj) {
-//        if (obj == this) {
-//            return true;
-//        }
-//        if (obj == null || obj.getClass() != this.getClass()) {
-//            return false;
-//        }
-//        UserModel userModel = (UserModel) obj;
-//        return id == userModel.id &&
-//                (username == userModel.username || (username != null && username.equals(userModel.getUsername()))) &&
-//                (password == userModel.password || (password != null && password.equals(userModel.getPassword()))) &&
-//                (role == userModel.role || (role != null && role.equals(userModel.getRole())));
-//    }
 
     public int hashCode() {
         return Objects.hash(id, username, password, role);

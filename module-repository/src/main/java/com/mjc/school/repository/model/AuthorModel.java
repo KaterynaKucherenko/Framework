@@ -2,7 +2,6 @@ package com.mjc.school.repository.model;
 
 import com.mjc.school.repository.interfaces.BaseEntity;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,22 +24,20 @@ public class AuthorModel implements BaseEntity<Long> {
     @Column(name = "id")
     private Long id;
 
+    @Getter
     @Column(nullable = false, name = "name", unique = true)
     private String name;
-    @Setter
-    @Getter
+
     @CreatedDate
     @Column(name = "createDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createDate;
-    @Getter
-    @Setter
+
     @LastModifiedDate
     @Column(name = "lastUpdateDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdateDate;
-    @Setter
-    @Getter
+
     @OneToMany(mappedBy = "authorModel", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<NewsModel> newsModelListWithId = new ArrayList<>();
 
@@ -63,10 +60,6 @@ public class AuthorModel implements BaseEntity<Long> {
     @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {

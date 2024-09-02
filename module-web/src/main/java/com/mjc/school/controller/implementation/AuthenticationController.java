@@ -7,11 +7,13 @@ import com.mjc.school.service.services.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
+@Component
 @RestController
 @RequestMapping(produces = "application/json")
 @RequiredArgsConstructor
@@ -21,23 +23,23 @@ public class AuthenticationController {
 
     @ApiOperation(value = "User registration", response = JwtAuthenticationResponse.class)
     @PostMapping("/sign-up")
-    public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody @Valid SignUpRequest request) {
-        JwtAuthenticationResponse response = userService.signUp(request);
-        return ResponseEntity.ok(response);
+    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+        return userService.signUp(request);
     }
 
     @ApiOperation(value = "User authorisation", response = JwtAuthenticationResponse.class)
     @PostMapping("/sign-in")
-    public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
-        JwtAuthenticationResponse response = userService.signIn(request);
-        System.out.println("Token in Response: " + response.getToken());
-        return ResponseEntity.ok(response);
+    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
+       return userService.signIn(request);
+//        JwtAuthenticationResponse response = userService.signIn(request);
+//        System.out.println("Token in Response: " + response.getToken());
+//        return ResponseEntity.ok(response);
 
     }
 
-    @GetMapping("/get-admin")
-    @Operation(summary = "Get admin role")
-    public void getAdmin() {
-        userService.getAdmin();
-    }
+//    @GetMapping("/get-admin")
+//    @Operation(summary = "Get admin role")
+//    public void getAdmin() {
+//        userService.getAdmin();
+//    }
 }

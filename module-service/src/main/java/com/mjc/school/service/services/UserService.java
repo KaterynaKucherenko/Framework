@@ -8,20 +8,19 @@ import com.mjc.school.service.dtoForUser.SignInRequest;
 import com.mjc.school.service.dtoForUser.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
-public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenService jwtTokenService;
-    private final AuthenticationManager authenticationManager;
+public class UserService implements UserDetailsService {
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService, AuthenticationManager authenticationManager) {
@@ -30,6 +29,10 @@ public class UserService {
         this.jwtTokenService = jwtTokenService;
         this.authenticationManager = authenticationManager;
     }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public UserModel save(UserModel userModel) {
@@ -48,14 +51,18 @@ public class UserService {
 
 
     public UserDetailsService userDetailsService() {
-        return (UserDetailsService) this;
+        return  this::loadUserByUsername;
     }
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        UserModel userModel = null;
-        if (userRepository.findByUsername(request.username())!=null) {
+        String rawPassword = request.password();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+
+        System.out.println("Raw Password: " + rawPassword);
+        System.out.println("Encoded Password: " + encodedPassword);
+        if (userRepository.findByUsername(request.username()).isPresent()) {
             throw new UsernameNotFoundException("User " + request.username() + " already exist");}
-            userModel = UserModel.builder()
+           var userModel = UserModel.builder()
                     .username(request.username())
                     .password(passwordEncoder.encode(request.password()))
                     .role(Role.ROLE_USER)
@@ -68,42 +75,63 @@ public class UserService {
 
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        if (userRepository.findByUsername(request.username())==null){
-            throw new UsernameNotFoundException("User " + request.username() + " not found");
+//        if (userRepository.findByUsername(request.username())==null){
+//            throw new UsernameNotFoundException("User " + request.username() + " not found");
+//        }
+        String rawPassword = request.password();
+        Optional<UserModel> users = userRepository.findByUsername(request.username());
+        if (!passwordEncoder.matches(request.password(), users.get().getPassword())) {
+            throw new BadCredentialsException("Invalid password");
         }
-        System.out.println("Authenticating user: " + request.username());
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.username(),
-                request.password()
-        ));
 
-        var user = userRepository.findByUsername(request.username());
+        System.out.println("Raw Password during login: " + rawPassword);
+        System.out.println("Encoded Password in DB: " + users.get().getPassword());
+//        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.username(),
+                    rawPassword));
+
+                    System.out.println("Authenticating user: " + request.username());
+
+//        } catch (Exception e) {
+//            System.out.println("Authentication failed: " + e.getMessage());
+//            throw e;}
+
+        System.out.println("Before user=");
+        UserModel user = userRepository.findByUsername(request.username()) .orElseThrow(() -> new UsernameNotFoundException("User not found"));;
+        System.out.println("Before jvt" );
         var jwt = jwtTokenService.generateToken(user);
+        System.out.println("Token: " + jwt);
         return new JwtAuthenticationResponse(jwt);
     }
 
 
-    public UserModel getCurrentUser() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getUserByUsername(username);
-    }
 
-    private UserModel getUserByUsername(String username) {
-        if (!userRepository.existsByUsername(username)) {
-            throw new UsernameNotFoundException("User " + username + " not found");
-        }
-        return userRepository.findByUsername(username);
-    }
 
-    public void getAdmin() {
-        var user = getCurrentUser();
-        user.setRole(Role.ROLE_ADMIN);
-        save(user);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
 
 
-
+//    public UserModel getCurrentUser() {
+//        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        return getUserByUsername(username);
+//    }
+//
+//    private UserModel getUserByUsername(String username) {
+//        if (!userRepository.existsByUsername(username)) {
+//            throw new UsernameNotFoundException("User " + username + " not found");
+//        }
+//        return userRepository.findByUsername(username);
+//    }
+//
+//    public void getAdmin() {
+//        var user = getCurrentUser();
+//        user.setRole(Role.ROLE_ADMIN);
+//        save(user);
+//    }
 
 
 

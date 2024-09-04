@@ -147,7 +147,7 @@ public class CommentControllerTest {
                 .statusCode(200)
                 .body("newsId", equalTo(newsId));
 
-       deleteNewsCommentTest(newsResp);
+        deleteNewsCommentTest(newsResp);
 
 
     }
@@ -180,19 +180,7 @@ public class CommentControllerTest {
                 .then()
                 .statusCode(204);
         deleteNewsCommentTest(newsResp);
-//        given()
-//                .contentType("application/json")
-//                .when()
-//                .request("DELETE", "/news/" + response.jsonPath().getLong("id"))
-//                .then()
-//                .statusCode(204);
-//
-//        List<Integer> tagIds = response.jsonPath().getList("tagList.id", Integer.class);
-//
-//        tagIds.forEach(a -> given().contentType("application/json")
-//                .delete("/tag/" + a)
-//                .then()
-//                .statusCode(204));
+
 
     }
 
@@ -210,21 +198,6 @@ public class CommentControllerTest {
                 then().statusCode(204);
     }
 
-//        tagIds.forEach(a -> given().contentType("application/json")
-//                .delete("/tag/" + a)
-//                .then()
-//                .statusCode(204));
-//        given()
-//                .contentType("application/json")
-//                .request("DELETE", "/news/" + newsResp.jsonPath().getInt("id"))
-//                .then()
-//                .statusCode(204);
-//
-//        given()
-//                .contentType("application/json")
-//                .delete("/author/" + newsResp.jsonPath().getInt("authorDtoResponse.id"))
-//                .then()
-//                .statusCode(204);
 
 }
 

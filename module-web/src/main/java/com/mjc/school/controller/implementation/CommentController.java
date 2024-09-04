@@ -72,6 +72,7 @@ public class CommentController implements BaseController<CommentDtoRequest, Comm
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created a comment"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
@@ -89,6 +90,8 @@ public class CommentController implements BaseController<CommentDtoRequest, Comm
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated a comment"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
+            @ApiResponse(code = 403, message = "User don`t have permission to access."),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
@@ -106,6 +109,8 @@ public class CommentController implements BaseController<CommentDtoRequest, Comm
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted comment by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
+            @ApiResponse(code = 403, message = "User don`t have permission to access."),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })

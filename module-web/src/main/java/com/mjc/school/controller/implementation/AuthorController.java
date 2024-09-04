@@ -79,6 +79,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created an author"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
@@ -94,10 +95,12 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update an author", response = AuthorDtoResponse.class)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated an author"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
+            @ApiResponse(code = 403, message = "User don`t have permission to access."),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
@@ -116,6 +119,8 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted author by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 401, message = "User is unauthorised"),
+            @ApiResponse(code = 403, message = "User don`t have permission to access."),
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })

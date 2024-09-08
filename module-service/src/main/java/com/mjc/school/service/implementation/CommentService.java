@@ -63,6 +63,7 @@ public class CommentService implements CommentServiceInterface {
     @Transactional
     public CommentDtoResponse create(CommentDtoRequest createRequest) {
         customValidator.validateComment(createRequest);
+        NewsModel news = newsRepository.getReference(createRequest.newsId());
         CommentModel commentModel = commentMapper.DtoCommentToModel(createRequest);
         NewsModel newsModel = newsRepository.readById(createRequest.newsId()).get();
         commentModel.setNewsModel(newsModel);

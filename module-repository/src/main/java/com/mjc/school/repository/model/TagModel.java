@@ -24,6 +24,7 @@ public class TagModel implements BaseEntity<Long> {
 
     public TagModel() {
     }
+    public TagModel(String name) {}
 
     public void setId(Long id) {
         this.id = id;

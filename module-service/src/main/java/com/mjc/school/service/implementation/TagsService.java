@@ -1,5 +1,6 @@
 package com.mjc.school.service.implementation;
 
+import com.mjc.school.repository.implementation.NewsRepository;
 import com.mjc.school.repository.implementation.TagRepository;
 import com.mjc.school.repository.model.TagModel;
 import com.mjc.school.service.dto.TagDtoRequest;
@@ -24,6 +25,7 @@ import static com.mjc.school.service.exceptions.ErrorCodes.*;
 public class TagsService implements TagServiceInterface {
     private final TagRepository tagsRepository;
     private final TagMapper tagMapper;
+
     private CustomValidator customValidator;
 
     @Autowired
@@ -56,7 +58,7 @@ public class TagsService implements TagServiceInterface {
     public TagDtoResponse create(TagDtoRequest createRequest) {
         customValidator.validateTag(createRequest);
         if (tagsRepository.readTagByName(createRequest.name()).isPresent()) {
-            throw new ValidatorException("Name of tag must be unique");
+            throw new ValidatorException(String.format(NOT_UNIQUE_TAGS_NAME.getErrorMessage(), createRequest.name()));
         }
         TagModel tagModel = tagMapper.DtoTagsToModel(createRequest);
         return tagMapper.ModelTagsToDto(tagsRepository.create(tagModel));
@@ -68,7 +70,7 @@ public class TagsService implements TagServiceInterface {
         if (tagsRepository.existById(id)) {
             customValidator.validateTag(updateRequest);
             if (tagsRepository.readTagByName(updateRequest.name()).isPresent()) {
-                throw new ValidatorException("Name of tag must be unique");
+                throw new ValidatorException(String.format(NOT_UNIQUE_TAGS_NAME.getErrorMessage(), updateRequest.name()));
             }
             TagModel tagModel = tagMapper.DtoTagsToModel(updateRequest);
             tagModel.setId(id);
@@ -87,15 +89,18 @@ public class TagsService implements TagServiceInterface {
         } else {
             throw new ElementNotFoundException(String.format(NO_TAG_WITH_PROVIDED_ID.getErrorMessage(), id));
         }
-
-
     }
 
     public List<TagDtoResponse> readListOfTagsByNewsId(Long newsId) {
         if (newsId != null && newsId >= 0) {
-            return tagMapper.listModelToDtoList(tagsRepository.readListOfTagsByNewsId(newsId));
+           try {
+               return tagMapper.listModelToDtoList(tagsRepository.readListOfTagsByNewsId(newsId));
+           }
+           catch (Exception e) {
+               throw new ElementNotFoundException(String.format(NO_TAGS_FOR_NEWS_ID.getErrorMessage(), newsId));
+           }
         } else {
-            throw new ElementNotFoundException(String.format(NO_TAGS_FOR_NEWS_ID.getErrorMessage(), newsId));
+            throw new ElementNotFoundException(String.format(NO_NEWS_WITH_PROVIDED_ID.getErrorMessage(), newsId));
 
         }
     }

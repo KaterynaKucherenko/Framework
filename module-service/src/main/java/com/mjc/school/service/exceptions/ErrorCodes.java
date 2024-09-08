@@ -11,7 +11,8 @@ public enum ErrorCodes {
     INVALID_VALUE_OF_SORTING("40408", "Value of the sortBy is wrong"),
     VALIDATION("40001", "Validation failed: %s."),
     UNEXPECTED_ERROR("00002", "Unexpected error happened on server"),
-    NOT_UNIQUE_AUTHOR_NAME("0000", "Name of author does not unique.");
+    NOT_UNIQUE_AUTHOR_NAME("00003", "Name of author does not unique."),
+    NOT_UNIQUE_TAGS_NAME("00004", "Name of tag does not unique.");
 
 
     private final String errorMessage;

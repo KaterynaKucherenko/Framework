@@ -48,6 +48,9 @@ public class NewsModel implements BaseEntity<Long>, Serializable {
     public NewsModel() {
 
     }
+    public NewsModel(Long id, String title, String content, AuthorModel authorModel) {
+
+    }
 
 
     public String getTitle() {

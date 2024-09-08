@@ -19,7 +19,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mjc.school.service.exceptions.ErrorCodes.*;
+import static com.mjc.school.service.exceptions.ErrorCodes.INVALID_VALUE_OF_SORTING;
+import static com.mjc.school.service.exceptions.ErrorCodes.NOT_UNIQUE_AUTHOR_NAME;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_AUTHOR_FOR_NEWS_ID;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_AUTHOR_WITH_PROVIDED_ID;
 
 @Service("authorService")
 @Transactional
@@ -27,6 +30,7 @@ public class AuthorService implements AuthorServiceInterface {
     private final AuthorRepository authorRepository;
     private final AuthorMapper authorMapper;
     private CustomValidator customValidator;
+
 
 
     @Autowired
@@ -58,9 +62,9 @@ public class AuthorService implements AuthorServiceInterface {
     @Override
     @Transactional
     public AuthorDtoResponse create(@Valid AuthorDtoRequest createRequest) {
-        customValidator.validateAuthor(createRequest);
+      customValidator.validateAuthor(createRequest);
         if (authorRepository.readAuthorByName(createRequest.name()).isPresent()) {
-            throw new ValidatorException("Name of author must be unique");
+            throw new ValidatorException(String.format(NOT_UNIQUE_AUTHOR_NAME.getErrorMessage(), createRequest.name()));
         }
         AuthorModel authorModel = authorMapper.DtoAuthorToModel(createRequest);
 
@@ -75,7 +79,7 @@ public class AuthorService implements AuthorServiceInterface {
         if (authorRepository.existById(id)) {
             customValidator.validateAuthor(updateRequest);
             if (authorRepository.readAuthorByName(updateRequest.name()).isPresent()) {
-                throw new ValidatorException("Name of author must be unique");
+                throw new ValidatorException(String.format(NOT_UNIQUE_AUTHOR_NAME.getErrorMessage(), updateRequest.name()));
             }
             AuthorModel authorModel = authorMapper.DtoAuthorToModel(updateRequest);
             authorModel.setId(id);

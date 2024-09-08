@@ -19,7 +19,7 @@ public abstract class CommentMapper {
 
     @Mappings(value = {@Mapping(target = "created", ignore = true),
             @Mapping(target = "modified", ignore = true),
-            @Mapping(target = "newsModel", expression = "java(newsRepository.getReference(commentDtoRequest.newsId()))"),
+            @Mapping(target = "newsModel", ignore = true),
             @Mapping(target = "id", ignore = true)})
     public abstract CommentModel DtoCommentToModel(CommentDtoRequest commentDtoRequest);
 
@@ -31,3 +31,4 @@ public abstract class CommentMapper {
     public abstract List<CommentDtoResponse> listModelToDtoList(List<CommentModel> command);
 
 }
+//expression = "java(newsRepository.getReference(commentDtoRequest.newsId()))"

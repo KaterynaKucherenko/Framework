@@ -39,7 +39,6 @@ public class CommentModel implements BaseEntity<Long> {
 
 
     public CommentModel() {
-
     }
 
     @Override

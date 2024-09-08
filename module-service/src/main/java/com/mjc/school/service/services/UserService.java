@@ -41,7 +41,6 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsername(userModel.getUsername())) {
             throw new IllegalArgumentException("User with the same name already exists");
         }
-        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));
         return save(userModel);
 
     }
@@ -78,7 +77,6 @@ public class UserService implements UserDetailsService {
         System.out.println("Authenticating user: " + request.username());
 
         UserModel user = userRepository.findByUsername(request.username()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        ;
         var jwt = jwtTokenService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }

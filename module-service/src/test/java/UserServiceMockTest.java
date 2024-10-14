@@ -14,15 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,7 @@ public class UserServiceMockTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private  AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     @Mock
     private JwtTokenService jwtTokenService;
     @Mock
@@ -52,37 +52,35 @@ public class UserServiceMockTest {
                 .password("password123")
                 .role(Role.ROLE_USER)
                 .build();
-//        userModel = new UserModel(1L, "Barbara", "password123", Role.ROLE_USER);
         signUpRequest = new SignUpRequest("Barbara", "password123");
         signInRequest = new SignInRequest("Barbara", "password123");
 
     }
-@Test
-    public void signUpTest(){
-    String rawPassword = "password123";
-    String encodedPassword = "encodedPassword123";
-    when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
-    when(userRepository.findByUsername(signUpRequest.username())).thenReturn(Optional.empty());
-    String jwtToken = "jwtToken";
-    when(jwtTokenService.generateToken(any(UserModel.class))).thenReturn(jwtToken);
-    JwtAuthenticationResponse response = userService.signUp(signUpRequest);
-    verify(passwordEncoder).encode(rawPassword);
-    verify(userRepository).findByUsername(signUpRequest.username());
-    verify(userRepository).save(any(UserModel.class));
-    verify(jwtTokenService).generateToken(any(UserModel.class));
-    assertEquals(jwtToken, response.getToken());
-}
 
-@Test
-    public void signInTest(){
-    String rawPassword = "password123";
-    String encodedPassword = "encodedPassword123";
-    String jwtToken = "jwtToken";
-    when(authenticationManager.authenticate(any())).thenReturn(new UsernamePasswordAuthenticationToken("Barbara", "password123"));
-    when(userRepository.findByUsername(signInRequest.username())).thenReturn(Optional.of(userModel));
-    when(jwtTokenService.generateToken(any())).thenReturn(jwtToken);
-    JwtAuthenticationResponse response = userService.signIn(signInRequest);
-    assertEquals(jwtToken, response.getToken());
-}
+    @Test
+    public void signUpTest() {
+        String rawPassword = "password123";
+        String encodedPassword = "encodedPassword123";
+        when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
+        when(userRepository.findByUsername(signUpRequest.username())).thenReturn(Optional.empty());
+        String jwtToken = "jwtToken";
+        when(jwtTokenService.generateToken(any(UserModel.class))).thenReturn(jwtToken);
+        JwtAuthenticationResponse response = userService.signUp(signUpRequest);
+        verify(passwordEncoder).encode(rawPassword);
+        verify(userRepository).findByUsername(signUpRequest.username());
+        verify(userRepository).save(any(UserModel.class));
+        verify(jwtTokenService).generateToken(any(UserModel.class));
+        assertEquals(jwtToken, response.getToken());
+    }
+
+    @Test
+    public void signInTest() {
+        String jwtToken = "jwtToken";
+        when(authenticationManager.authenticate(any())).thenReturn(new UsernamePasswordAuthenticationToken("Barbara", "password123"));
+        when(userRepository.findByUsername(signInRequest.username())).thenReturn(Optional.of(userModel));
+        when(jwtTokenService.generateToken(any())).thenReturn(jwtToken);
+        JwtAuthenticationResponse response = userService.signIn(signInRequest);
+        assertEquals(jwtToken, response.getToken());
+    }
 
 }

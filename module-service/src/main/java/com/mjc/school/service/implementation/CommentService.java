@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mjc.school.service.exceptions.ErrorCodes.*;
+import static com.mjc.school.service.exceptions.ErrorCodes.INVALID_VALUE_OF_SORTING;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_COMMENTS_FOR_NEWS_ID;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_COMMENT_WITH_PROVIDED_ID;
 
 @Service("commentService")
 @Transactional
@@ -63,7 +65,6 @@ public class CommentService implements CommentServiceInterface {
     @Transactional
     public CommentDtoResponse create(CommentDtoRequest createRequest) {
         customValidator.validateComment(createRequest);
-        NewsModel news = newsRepository.getReference(createRequest.newsId());
         CommentModel commentModel = commentMapper.DtoCommentToModel(createRequest);
         NewsModel newsModel = newsRepository.readById(createRequest.newsId()).get();
         commentModel.setNewsModel(newsModel);

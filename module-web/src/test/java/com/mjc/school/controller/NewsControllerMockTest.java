@@ -77,8 +77,8 @@ public class NewsControllerMockTest {
                 new NewsDtoResponse(1L, NEWS_TITLE, NEWS_CONTENT, null, null, AUTHOR_RESP, LIST_OF_TAGS, LIST_OF_COMMENTS),
                 new NewsDtoResponse(2L, "News_title_example", "News_content_example", null, null, new AuthorDtoResponse(6L, "Amicia", null, null), LIST_OF_TAGS, LIST_OF_COMMENTS)
         );
-
-        when(newsService.readAll(anyInt(), anyInt(), anyString())).thenReturn(news);
+        NewsPageDtoResponse newsPageResponse = new NewsPageDtoResponse(news, 2L);
+        when(newsService.readAll(anyInt(), anyInt(), anyString())).thenReturn(newsPageResponse);
 
         mockMvc.perform(get("/api/v1/news")
                         .param("page", "0")

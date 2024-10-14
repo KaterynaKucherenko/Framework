@@ -85,7 +85,7 @@ public class TagsController implements BaseController<TagDtoRequest, TagDtoRespo
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update a tag", response = TagDtoResponse.class)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated a tag"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -104,7 +104,7 @@ public class TagsController implements BaseController<TagDtoRequest, TagDtoRespo
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete tag by ID")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted tag by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),

@@ -48,67 +48,73 @@ public class TagServiceMockTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        tagModel = new TagModel( "programming");
+        tagModel = new TagModel("programming");
         tagsService = new TagsService(tagRepository, tagMapper, customValidator);
     }
+
     @Test
-    public void readAllTagsTest(){
+    public void readAllTagsTest() {
         List<TagModel> tagModelsList = List.of(new TagModel("programming"), new TagModel("auditing"));
-        when(tagRepository.readAll(anyInt(), anyInt(),anyString())).thenReturn(tagModelsList);
-        List<TagDtoResponse> result = tagsService.readAll(0, 5,"name,dsc");
+        when(tagRepository.readAll(anyInt(), anyInt(), anyString())).thenReturn(tagModelsList);
+        List<TagDtoResponse> result = tagsService.readAll(0, 5, "name,dsc");
 
         assertEquals(tagModelsList.size(), result.size());
         assertEquals(tagModelsList.get(0).getName(), result.get(0).name());
         assertEquals(tagModelsList.get(1).getName(), result.get(1).name());
     }
+
     @Test
-    public void readTagByIdTest(){
+    public void readTagByIdTest() {
         when(tagRepository.readById(anyLong())).thenReturn(Optional.of(tagModel));
         TagDtoResponse result = tagsService.readById(1L);
         assertEquals(tagModel.getName(), result.name());
     }
 
     @Test
-    public void readTagByIdWithElementNotFoundException(){
+    public void readTagByIdWithElementNotFoundException() {
         when(tagRepository.readById(anyLong())).thenReturn(Optional.empty());
-        ElementNotFoundException exception = Assertions.assertThrows(ElementNotFoundException.class , () -> tagsService.readById(1L));
+        ElementNotFoundException exception = Assertions.assertThrows(ElementNotFoundException.class, () -> tagsService.readById(1L));
         assertEquals(exception.getMessage(), String.format(NO_TAG_WITH_PROVIDED_ID.getErrorMessage(), 1L));
     }
+
     @Test
-    public void createTagTest(){
+    public void createTagTest() {
         when(tagRepository.create(any())).thenReturn(tagModel);
         TagDtoResponse result = tagsService.create(new TagDtoRequest("programming"));
         assertEquals(tagModel.getName(), result.name());
     }
+
     @Test
-    public void createValidationFailedTagTest(){
+    public void createValidationFailedTagTest() {
         lenient().when(tagRepository.create(any())).thenReturn(tagModel);
         TagDtoRequest result = new TagDtoRequest("pr");
-        assertThrows(ValidationException.class , () -> tagsService.create(result));
+        assertThrows(ValidationException.class, () -> tagsService.create(result));
     }
+
     @Test
     public void createTagWithNonUniqueNameTest() {
         when(tagRepository.readTagByName(anyString())).thenReturn(Optional.of(tagModel));
         TagDtoRequest result = new TagDtoRequest("programming");
-        Exception exception = assertThrows(ValidatorException.class , () -> tagsService.create(result));
+        Exception exception = assertThrows(ValidatorException.class, () -> tagsService.create(result));
         verify(tagRepository, never()).create(any());
         assertEquals(exception.getMessage(), NOT_UNIQUE_TAGS_NAME.getErrorMessage());
     }
 
     @Test
-    public void deleteTagTest(){
+    public void deleteTagTest() {
         when(tagRepository.existById(anyLong())).thenReturn(true);
         tagsService.deleteById(1L);
     }
 
     @Test
-    public void deleteNonexistentTag(){
+    public void deleteNonexistentTag() {
         lenient().when(tagRepository.existById(anyLong())).thenReturn(false);
-        ElementNotFoundException exception =  Assertions.assertThrows(ElementNotFoundException.class , () -> tagsService.deleteById(1L));
+        ElementNotFoundException exception = Assertions.assertThrows(ElementNotFoundException.class, () -> tagsService.deleteById(1L));
         assertEquals(exception.getMessage(), String.format(NO_TAG_WITH_PROVIDED_ID.getErrorMessage(), 1L));
     }
+
     @Test
-    public void readListOfTagsByNewsIdTest(){
+    public void readListOfTagsByNewsIdTest() {
         List<TagModel> listOfTags = List.of(new TagModel("programming"), new TagModel("auditing"));
         when(tagRepository.readListOfTagsByNewsId((anyLong()))).thenReturn(listOfTags);
         List<TagDtoResponse> result = tagsService.readListOfTagsByNewsId(1L);

@@ -1,9 +1,9 @@
 package com.mjc.school.controller.implementation;
 
 
-import com.mjc.school.controller.interfaces.BaseController;
 import com.mjc.school.controller.annotation.CommandParam;
 import com.mjc.school.controller.hateoas.LinkHelper;
+import com.mjc.school.controller.interfaces.NewsControllerInterface;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.interfaces.AuthorServiceInterface;
 import com.mjc.school.service.interfaces.CommentServiceInterface;
@@ -20,9 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/v1/news", produces = "application/json")
 @Api(value = "News", description = "Operations for creating, updating, retrieving and deleting news in the application")
-public class NewsController implements BaseController<NewsDtoRequest, NewsDtoResponse, Long> {
+public class NewsController implements NewsControllerInterface<NewsDtoRequest, NewsDtoResponse, Long> {
 
-    private final NewsServiceInterface newsService;
+    private final NewsServiceInterface <NewsDtoRequest, NewsDtoResponse, Long> newsService;
     private final AuthorServiceInterface authorService;
     private final TagServiceInterface tagService;
     private final CommentServiceInterface commentService;
@@ -44,11 +44,13 @@ public class NewsController implements BaseController<NewsDtoRequest, NewsDtoRes
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
-    public List<NewsDtoResponse> readAll(
+    public EntityModel<NewsPageDtoResponse> readAll(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size,
             @RequestParam(value = "sortBy", required = false, defaultValue = "createDate,dsc") String sortBy) {
-        return newsService.readAll(page, size, sortBy);
+        NewsPageDtoResponse response = newsService.readAll(page, size, sortBy);  // Запрос к сервису
+        EntityModel<NewsPageDtoResponse> model = EntityModel.of(response);
+        return model;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class NewsController implements BaseController<NewsDtoRequest, NewsDtoRes
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update a news", response = NewsDtoResponse.class)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated a news"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -108,7 +110,7 @@ public class NewsController implements BaseController<NewsDtoRequest, NewsDtoRes
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete news by ID")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted news by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),

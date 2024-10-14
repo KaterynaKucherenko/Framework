@@ -86,6 +86,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     public EntityModel<AuthorDtoResponse> create(@Valid @RequestBody AuthorDtoRequest createRequest) {
         EntityModel<AuthorDtoResponse> model = EntityModel.of(authorService.create(createRequest));
         LinkHelper.addLinkToAuthors(model);
+        System.out.println(createRequest.name());
         return model;
 
     }
@@ -95,7 +96,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @PatchMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update an author", response = AuthorDtoResponse.class)
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated an author"),
             @ApiResponse(code = 400, message = "Invalid request from the client"),
@@ -115,7 +116,7 @@ public class AuthorController implements BaseController<AuthorDtoRequest, Author
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete author by ID")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted author by ID"),
             @ApiResponse(code = 400, message = "Invalid ID supplied"),

@@ -28,7 +28,6 @@ public abstract class NewsMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authorModel", expression = "java(authorRepository.readAuthorByName(newsDtoRequest.authorName()).get())")
     @Mapping(target = "tags", expression = "java(newsDtoRequest.tagNames().stream().map(name -> tagRepository.readTagByName(name).get()).toList())")
-    //@Mapping(target = "comments", expression = "java(newsDtoRequest.comments().stream().map(commentId -> commentRepository.readById(commentId).get()).toList())")
     public abstract NewsModel DTONewsToModel(NewsDtoRequest newsDtoRequest);
 
     @Mapping(source = "tags", target = "tagList")

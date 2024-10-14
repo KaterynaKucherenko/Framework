@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mjc.school.service.exceptions.ErrorCodes.NO_AUTHOR_WITH_PROVIDED_ID;
 import static com.mjc.school.service.exceptions.ErrorCodes.NO_COMMENT_WITH_PROVIDED_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -80,33 +79,34 @@ public class CommentsServiceMockTest {
 
 
     @Test
-    public void createCommentTest(){
+    public void createCommentTest() {
         when(newsRepository.readById(anyLong())).thenReturn(Optional.of(newsModel));
-        when(newsRepository.getReference(any())).thenReturn(newsModel);
         when(commentRepository.create(any())).thenReturn(commentModel);
         CommentDtoRequest commentDtoRequest = new CommentDtoRequest("Incredible!", 3L);
         CommentDtoResponse result = commentService.create(commentDtoRequest);
-      assertEquals(commentModel.getContent(), result.content());
+        assertEquals(commentModel.getContent(), result.content());
     }
+
     @Test
-    public void deleteCommentTest(){
+    public void deleteCommentTest() {
         when(commentRepository.existById(anyLong())).thenReturn(true);
         commentService.deleteById(1L);
     }
 
     @Test
-    public void deleteNonexistentComment(){
+    public void deleteNonexistentComment() {
         lenient().when(commentRepository.existById(anyLong())).thenReturn(false);
-        ElementNotFoundException exception =  Assertions.assertThrows(ElementNotFoundException.class , () -> commentService.deleteById(1L));
+        ElementNotFoundException exception = Assertions.assertThrows(ElementNotFoundException.class, () -> commentService.deleteById(1L));
         assertEquals(exception.getMessage(), String.format(NO_COMMENT_WITH_PROVIDED_ID.getErrorMessage(), 1L));
     }
-@Test
-    public void readListOfCommentsByNewsIdTest(){
-    List<CommentModel> commentModelList = List.of(commentModel, new CommentModel(2L, "Unbelievable!", newsModel, LocalDateTime.now(), LocalDateTime.now().plusDays(1)));
-   when(commentRepository.readListOfCommentsByNewsId(anyLong())).thenReturn(commentModelList);
-   List<CommentDtoResponse> result = commentService.readListOfCommentsByNewsId(1L);
-   assertEquals(commentModelList.size(), result.size());
-   assertEquals(commentModelList.get(0).getContent(), result.get(0).content());
-   assertEquals(commentModelList.get(1).getContent(), result.get(1).content());
-}
+
+    @Test
+    public void readListOfCommentsByNewsIdTest() {
+        List<CommentModel> commentModelList = List.of(commentModel, new CommentModel(2L, "Unbelievable!", newsModel, LocalDateTime.now(), LocalDateTime.now().plusDays(1)));
+        when(commentRepository.readListOfCommentsByNewsId(anyLong())).thenReturn(commentModelList);
+        List<CommentDtoResponse> result = commentService.readListOfCommentsByNewsId(1L);
+        assertEquals(commentModelList.size(), result.size());
+        assertEquals(commentModelList.get(0).getContent(), result.get(0).content());
+        assertEquals(commentModelList.get(1).getContent(), result.get(1).content());
+    }
 }

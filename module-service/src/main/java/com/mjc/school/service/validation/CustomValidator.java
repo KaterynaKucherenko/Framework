@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.validation.ValidationException;
 
 
-
 @Component
 public class CustomValidator {
     public static final int TITLE_MAX_LENGTH = 30;
@@ -27,7 +26,7 @@ public class CustomValidator {
     public static final String ERROR_OF_TAGS_NAME = "Length of tag`s name must be between " + TAG_NAME_MIN_LENGTH + " and " + TAG_NAME_MAX_LENGTH;
     public static final String ERROR_OF_NEWS_TITLE = "Length of title must be between " + TITLE_MIN_LENGTH + " and " + TITLE_MAX_LENGTH;
     public static final String ERROR_OF_NEWS_CONTENT = "Length of content must be between " + NEWS_CONTENT_MIN_LENGTH + " and " + NEWS_CONTENT_MAX_LENGTH;
-    public static final String ERROR_OF_COMMENTS_CONTENT ="Length of comment`s content must be between " + COMMENTS_CONTENT_MIN_LENGTH + " and " + COMMENTS_CONTENT_MAX_LENGTH;
+    public static final String ERROR_OF_COMMENTS_CONTENT = "Length of comment`s content must be between " + COMMENTS_CONTENT_MIN_LENGTH + " and " + COMMENTS_CONTENT_MAX_LENGTH;
 
 
     public void validateLength(String param, int minLength, int maxLength, String error) {
@@ -52,8 +51,6 @@ public class CustomValidator {
     public void validateComment(CommentDtoRequest comment) {
         validateLength(comment.content(), COMMENTS_CONTENT_MIN_LENGTH, COMMENTS_CONTENT_MAX_LENGTH, ERROR_OF_COMMENTS_CONTENT);
     }
-
-
 
 
 }

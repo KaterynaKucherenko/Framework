@@ -54,14 +54,12 @@ public class UserService implements UserDetailsService {
         String rawPassword = request.password();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        System.out.println("Raw Password: " + rawPassword);
-        System.out.println("Encoded Password: " + encodedPassword);
         if (userRepository.findByUsername(request.username()).isPresent()) {
             throw new UsernameNotFoundException("User " + request.username() + " already exist");
         }
         var userModel = UserModel.builder()
                 .username(request.username())
-                .password(request.password())
+                .password(encodedPassword)
                 .role(Role.ROLE_USER)
                 .build();
         this.create(userModel);
@@ -72,10 +70,10 @@ public class UserService implements UserDetailsService {
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         String rawPassword = request.password();
+        System.out.println("Raw Password: " + rawPassword);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.username(), rawPassword));
+                request.username(), request.password()));
         System.out.println("Authenticating user: " + request.username());
-
         UserModel user = userRepository.findByUsername(request.username()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         var jwt = jwtTokenService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);

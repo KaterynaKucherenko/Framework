@@ -31,4 +31,3 @@ public abstract class CommentMapper {
     public abstract List<CommentDtoResponse> listModelToDtoList(List<CommentModel> command);
 
 }
-//expression = "java(newsRepository.getReference(commentDtoRequest.newsId()))"

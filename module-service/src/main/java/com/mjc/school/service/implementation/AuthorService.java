@@ -32,7 +32,6 @@ public class AuthorService implements AuthorServiceInterface {
     private CustomValidator customValidator;
 
 
-
     @Autowired
     public AuthorService(AuthorRepository authorRepository, AuthorMapper authorMapper, CustomValidator customValidator) {
         this.authorRepository = authorRepository;
@@ -62,7 +61,7 @@ public class AuthorService implements AuthorServiceInterface {
     @Override
     @Transactional
     public AuthorDtoResponse create(@Valid AuthorDtoRequest createRequest) {
-      customValidator.validateAuthor(createRequest);
+        customValidator.validateAuthor(createRequest);
         if (authorRepository.readAuthorByName(createRequest.name()).isPresent()) {
             throw new ValidatorException(String.format(NOT_UNIQUE_AUTHOR_NAME.getErrorMessage(), createRequest.name()));
         }

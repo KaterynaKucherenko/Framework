@@ -8,6 +8,7 @@ import com.mjc.school.repository.model.NewsModel;
 import com.mjc.school.repository.model.TagModel;
 import com.mjc.school.service.dto.NewsDtoRequest;
 import com.mjc.school.service.dto.NewsDtoResponse;
+import com.mjc.school.service.dto.NewsPageDtoResponse;
 import com.mjc.school.service.exceptions.ElementNotFoundException;
 import com.mjc.school.service.exceptions.ErrorCodes;
 import com.mjc.school.service.exceptions.ValidatorException;
@@ -22,12 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mjc.school.service.exceptions.ErrorCodes.*;
-import static com.mjc.school.service.validation.CustomValidator.*;
+import static com.mjc.school.service.exceptions.ErrorCodes.INVALID_VALUE_OF_SORTING;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_NEWS_WITH_PROVIDED_ID;
+import static com.mjc.school.service.validation.CustomValidator.AUTHOR_NAME_MAX_LENGTH;
+import static com.mjc.school.service.validation.CustomValidator.AUTHOR_NAME_MIN_LENGTH;
+import static com.mjc.school.service.validation.CustomValidator.TAG_NAME_MAX_LENGTH;
+import static com.mjc.school.service.validation.CustomValidator.TAG_NAME_MIN_LENGTH;
 
 @Service("newsService")
 @Transactional
-public class NewsService implements NewsServiceInterface {
+public class NewsService implements NewsServiceInterface<NewsDtoRequest, NewsDtoResponse, Long> {
     private final NewsRepository newsRepository;
     private NewsMapper newsMapper;
     private final AuthorRepository authorRepository;
@@ -45,9 +50,11 @@ public class NewsService implements NewsServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsDtoResponse> readAll(int page, int size, String sortBy) {
+    public NewsPageDtoResponse readAll(int page, int size, String sortBy) {
         try {
-            return newsMapper.ModelListToDtoList((newsRepository.readAll(page, size, sortBy)));
+            List <NewsDtoResponse> newsList = newsMapper.ModelListToDtoList((newsRepository.readAll(page, size, sortBy)));
+            long totalNewsCount = newsRepository.readAll(page, size, sortBy).stream().count();
+            return new NewsPageDtoResponse(newsList, totalNewsCount);
         } catch (InvalidDataAccessApiUsageException e) {
             throw new ValidatorException(String.format(INVALID_VALUE_OF_SORTING.getErrorMessage()));
         }
@@ -66,7 +73,7 @@ public class NewsService implements NewsServiceInterface {
     @Override
     @Transactional
     public NewsDtoResponse create(NewsDtoRequest createRequest) {
-        if (createRequest.authorName().isBlank()){
+        if (createRequest.authorName().isBlank()) {
             throw new ValidatorException("Author name cannot be empty");
         }
         customValidator.validateNews(createRequest);
@@ -75,6 +82,7 @@ public class NewsService implements NewsServiceInterface {
             throw new ValidatorException("Please specify tag names");
         }
         createNotExistTags(createRequest.tagNames());
+
         if (newsRepository.readNewsByTitle(createRequest.title()).isPresent()) {
             throw new ValidatorException("Title of news must be unique");
         }
@@ -95,6 +103,7 @@ public class NewsService implements NewsServiceInterface {
             }
             NewsModel newsModel = newsMapper.DTONewsToModel(updateRequest);
             newsModel.setId(id);
+
             return newsMapper.ModelNewsToDTO(newsRepository.update(newsModel));
         } else {
             throw new ElementNotFoundException(String.format(NO_NEWS_WITH_PROVIDED_ID.getErrorMessage(), id));

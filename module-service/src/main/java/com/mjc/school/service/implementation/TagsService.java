@@ -1,6 +1,5 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.implementation.NewsRepository;
 import com.mjc.school.repository.implementation.TagRepository;
 import com.mjc.school.repository.model.TagModel;
 import com.mjc.school.service.dto.TagDtoRequest;
@@ -18,7 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mjc.school.service.exceptions.ErrorCodes.*;
+import static com.mjc.school.service.exceptions.ErrorCodes.INVALID_VALUE_OF_SORTING;
+import static com.mjc.school.service.exceptions.ErrorCodes.NOT_UNIQUE_TAGS_NAME;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_NEWS_WITH_PROVIDED_ID;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_TAGS_FOR_NEWS_ID;
+import static com.mjc.school.service.exceptions.ErrorCodes.NO_TAG_WITH_PROVIDED_ID;
 
 @Service("tagsService")
 @Transactional

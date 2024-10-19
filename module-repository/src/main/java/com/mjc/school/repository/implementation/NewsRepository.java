@@ -43,7 +43,7 @@ public class NewsRepository extends AbstractDBRepository<NewsModel, Long> {
                 titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title + "%");
             }
             if (content != null && !content.isEmpty()) {
-                contentPredicate = criteriaBuilder.equal(root.get("content"), "%" + content + "%");
+                contentPredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), "%" + content + "%");
             }
 
             if (titlePredicate != null && contentPredicate != null) {

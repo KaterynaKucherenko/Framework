@@ -142,8 +142,9 @@ public class NewsController implements NewsControllerInterface<NewsDtoRequest, N
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "content", required = false) String content,
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
-NewsPageDtoResponse response = newsService.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize);
+            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+            @RequestParam (name = "sortBy", defaultValue = "createDate,desc") String sortBy) {
+NewsPageDtoResponse response = newsService.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize, sortBy);
         EntityModel<NewsPageDtoResponse> model = EntityModel.of(response);
         return model;
     }

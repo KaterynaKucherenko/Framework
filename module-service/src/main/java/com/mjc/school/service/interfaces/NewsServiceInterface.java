@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NewsServiceInterface <NewsDtoRequest, NewsDtoResponse, Long>{
     NewsPageDtoResponse readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page,
-                                               int pageSize);
+                                               int pageSize, String sortBy);
 
     NewsDtoResponse readById(Long id);
 
@@ -17,5 +17,6 @@ public interface NewsServiceInterface <NewsDtoRequest, NewsDtoResponse, Long>{
     NewsDtoResponse update(Long id, NewsDtoRequest updateRequest);
 
     boolean deleteById(Long id);
+
     NewsPageDtoResponse readAll(int page, int size, String sortBy);
 }

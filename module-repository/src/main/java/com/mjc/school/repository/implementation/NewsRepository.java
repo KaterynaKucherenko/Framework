@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository("newsRepository")
 public class NewsRepository extends AbstractDBRepository<NewsModel, Long> {
-    public NewsPageModel readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page, int pageSize) {
+    public NewsPageModel readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page, int pageSize, String sortBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<NewsModel> query = criteriaBuilder.createQuery(NewsModel.class);
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
@@ -22,40 +22,58 @@ public class NewsRepository extends AbstractDBRepository<NewsModel, Long> {
         Root<NewsModel> root = query.from(NewsModel.class);
         Root<NewsModel> countRoot = countQuery.from(NewsModel.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        Predicate predicates = criteriaBuilder.conjunction();
 
         if (tagName != null && !tagName.isEmpty()) {
             Join<NewsModel, TagModel> newsJoinTags = root.join("tags");
-            Join<NewsModel, TagModel> countJoinTags = countRoot.join("tags");
-            predicates.add(criteriaBuilder.in(newsJoinTags.get("name")).value(tagName));
-            predicates.add(criteriaBuilder.in(countJoinTags.get("name")).value(tagName));
+            predicates = criteriaBuilder.and(predicates, newsJoinTags.get("name").in(tagName));
         }
         if (tagId != null && !tagId.isEmpty()) {
             Join<NewsModel, TagModel> newsJoinTags = root.join("tags");
-            Join<NewsModel, TagModel> countJoinTags = countRoot.join("tags");
-            predicates.add(criteriaBuilder.in(newsJoinTags.get("id")).value(tagId));
-            predicates.add(criteriaBuilder.in(countJoinTags.get("id")).value(tagId));
+            predicates = criteriaBuilder.and(predicates, newsJoinTags.get("id").in(tagId));
         }
         if (authorName != null) {
             Join<NewsModel, AuthorModel> newsJoinAuthor = root.join("authorModel");
-            Join<NewsModel, AuthorModel> countJoinAuthor = countRoot.join("authorModel");
-            predicates.add(criteriaBuilder.equal(newsJoinAuthor.get("name"), authorName));
-            predicates.add(criteriaBuilder.equal(countJoinAuthor.get("name"), authorName));
+            predicates = criteriaBuilder.and(predicates, criteriaBuilder.like(newsJoinAuthor.get("name"), authorName));
         }
-        if (title != null || content != null) {
-            Predicate titlePredicate = criteriaBuilder.like(root.get("title"), "%" + (title != null ? title : content) + "%");
-            Predicate contentPredicate = criteriaBuilder.like(root.get("content"), "%" + (title != null ? title : content) + "%");
-            predicates.add(criteriaBuilder.or(titlePredicate, contentPredicate));
-            Predicate countTitlePredicate = criteriaBuilder.like(countRoot.get("title"), "%" + (title != null ? title : content) + "%");
-            Predicate countContentPredicate = criteriaBuilder.like(countRoot.get("content"), "%" + (title != null ? title : content) + "%");
-            countQuery.where(criteriaBuilder.or(countTitlePredicate, countContentPredicate));
+        if ((title != null && !title.isEmpty()) || (content != null && !content.isEmpty())) {
+            Predicate titlePredicate = null;
+            Predicate contentPredicate = null;
+            if (title != null && !title.isEmpty()) {
+                titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title + "%");
+            }
+            if (content != null && !content.isEmpty()) {
+                contentPredicate = criteriaBuilder.equal(root.get("content"), "%" + content + "%");
+            }
+
+            if (titlePredicate != null && contentPredicate != null) {
+                predicates = criteriaBuilder.and(predicates, criteriaBuilder.or(titlePredicate, contentPredicate));
+            } else if (title != null) {
+                predicates = criteriaBuilder.and(predicates, titlePredicate);
+            } else if (content != null) {
+                predicates = criteriaBuilder.and(predicates, contentPredicate);
+            }
         }
-        query.where(predicates.toArray(new Predicate[0]));
-        countQuery.select(criteriaBuilder.count(countRoot)).where(predicates.toArray(new Predicate[0]));
+        query.where(predicates);
+        countQuery.select(criteriaBuilder.count(root)).where(predicates);
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            String[] sortByArray = sortBy.split(",");
+            if (sortByArray.length == 2) {
+                String sort = sortByArray[0];
+                String typeSorting = sortByArray[1].equalsIgnoreCase("asc") ? "asc" : "desc";
+                if (typeSorting.equalsIgnoreCase("asc")) {
+                    query.orderBy(criteriaBuilder.asc(root.get(sort)));
+                } else {
+                    query.orderBy(criteriaBuilder.desc(root.get(sort)));
+                }
+            }
+        }
         List<NewsModel> newsList = entityManager.createQuery(query)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
+
         long totalNewsCount = entityManager.createQuery(countQuery).getSingleResult();
         return new NewsPageModel(newsList, totalNewsCount);
     }
@@ -82,6 +100,7 @@ public class NewsRepository extends AbstractDBRepository<NewsModel, Long> {
             return Optional.empty();
         }
     }
+
     public Long totalNewsCount() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);

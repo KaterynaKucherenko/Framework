@@ -123,8 +123,8 @@ public class NewsService implements NewsServiceInterface<NewsDtoRequest, NewsDto
     }
 
     @Override
-    public NewsPageDtoResponse readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page, int pageSize) {
-       NewsPageModel newsPageModel = newsRepository.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize);
+    public NewsPageDtoResponse readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page, int pageSize, String sortBy) {
+       NewsPageModel newsPageModel = newsRepository.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize, sortBy);
         List<NewsDtoResponse> newsDtoList = newsMapper.ModelListToDtoList(
                 newsPageModel.getNewsList());
         return new NewsPageDtoResponse(newsDtoList, newsPageModel.getTotalNewsCount());

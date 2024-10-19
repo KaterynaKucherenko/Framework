@@ -82,5 +82,12 @@ public class NewsRepository extends AbstractDBRepository<NewsModel, Long> {
             return Optional.empty();
         }
     }
-  
+    public Long totalCountForAllNews() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+        Root<NewsModel> newsModelRootRoot = criteriaQuery.from(NewsModel.class);
+        criteriaQuery.select(builder.count(newsModelRootRoot));
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
 }

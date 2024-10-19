@@ -54,7 +54,7 @@ public class NewsService implements NewsServiceInterface<NewsDtoRequest, NewsDto
     public NewsPageDtoResponse readAll(int page, int size, String sortBy) {
         try {
             List <NewsDtoResponse> newsList = newsMapper.ModelListToDtoList((newsRepository.readAll(page, size, sortBy)));
-            long totalCountForAllNews = newsRepository.totalCountForAllNews();
+            long totalCountForAllNews = newsRepository.totalNewsCount();
             return new NewsPageDtoResponse(newsList, totalCountForAllNews);
         } catch (InvalidDataAccessApiUsageException e) {
             throw new ValidatorException(String.format(INVALID_VALUE_OF_SORTING.getErrorMessage()));

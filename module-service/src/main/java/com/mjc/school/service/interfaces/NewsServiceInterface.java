@@ -7,7 +7,8 @@ import com.mjc.school.service.dto.NewsPageDtoResponse;
 import java.util.List;
 
 public interface NewsServiceInterface <NewsDtoRequest, NewsDtoResponse, Long>{
-    List<NewsDtoResponse> readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content);
+    NewsPageDtoResponse readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page,
+                                               int pageSize);
 
     NewsDtoResponse readById(Long id);
 

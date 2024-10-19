@@ -133,15 +133,17 @@ public class NewsController implements NewsControllerInterface<NewsDtoRequest, N
             @ApiResponse(code = 404, message = "Resource is not found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
-    public List<NewsDtoResponse> readListOfNewsByParams(
+    public NewsPageDtoResponse readListOfNewsByParams(
             @RequestParam(name = "tag_name", required = false) List<String> tagName,
             @RequestParam(name = "tag_id", required = false)
             @ApiParam(type = "Long", format = "int64")
             List<Long> tagId,
             @RequestParam(name = "author_name", required = false) String authorName,
             @RequestParam(name = "title", required = false) String title,
-            @RequestParam(name = "content", required = false) String content) {
-        return newsService.readListOfNewsByParams(tagName, tagId, authorName, title, content);
+            @RequestParam(name = "content", required = false) String content,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
+        return newsService.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize);
     }
 
     @GetMapping(value = "/{newsId:\\d+}/tag")

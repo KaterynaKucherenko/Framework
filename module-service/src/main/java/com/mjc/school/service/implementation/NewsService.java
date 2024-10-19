@@ -5,6 +5,7 @@ import com.mjc.school.repository.implementation.NewsRepository;
 import com.mjc.school.repository.implementation.TagRepository;
 import com.mjc.school.repository.model.AuthorModel;
 import com.mjc.school.repository.model.NewsModel;
+import com.mjc.school.repository.model.NewsPageModel;
 import com.mjc.school.repository.model.TagModel;
 import com.mjc.school.service.dto.NewsDtoRequest;
 import com.mjc.school.service.dto.NewsDtoResponse;
@@ -122,9 +123,11 @@ public class NewsService implements NewsServiceInterface<NewsDtoRequest, NewsDto
     }
 
     @Override
-    public List<NewsDtoResponse> readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content) {
-
-        return newsMapper.ModelListToDtoList(newsRepository.readListOfNewsByParams(tagName, tagId, authorName, title, content));
+    public NewsPageDtoResponse readListOfNewsByParams(List<String> tagName, List<Long> tagId, String authorName, String title, String content, int page, int pageSize) {
+       NewsPageModel newsPageModel = newsRepository.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize);
+        List<NewsDtoResponse> newsDtoList = newsMapper.ModelListToDtoList(
+                newsPageModel.getNewsList());
+        return new NewsPageDtoResponse(newsDtoList, newsPageModel.getTotalNewsCount());
     }
 
     public void createNotExistAuthor(String authorName) {

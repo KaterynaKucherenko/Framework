@@ -19,7 +19,7 @@ public class TagModel implements BaseEntity<Long> {
     @Column(nullable = false, name = "name", unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "tagsList", fetch = FetchType.LAZY)
     private List<NewsModel> news = new ArrayList<>();
 
     public TagModel() {

@@ -43,7 +43,7 @@ public class NewsModel implements BaseEntity<Long>, Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tags_of_news", joinColumns = @JoinColumn(name = "news_id"), inverseJoinColumns = @JoinColumn(name = "tags_id"))
-    private List<TagModel> tags = new ArrayList<>();
+    private List<TagModel> tagsList = new ArrayList<>();
 
     public NewsModel() {
 
@@ -128,11 +128,11 @@ public class NewsModel implements BaseEntity<Long>, Serializable {
 
 
     public void setTags(List<TagModel> tags) {
-        this.tags = tags;
+        this.tagsList = tags;
     }
 
     public List<TagModel> getTags() {
-        return tags;
+        return tagsList;
     }
 
     public AuthorModel getAuthorModel() {

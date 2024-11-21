@@ -3,10 +3,12 @@ package com.mjc.school.repository.implementation;
 
 import com.mjc.school.repository.interfaces.BaseRepository;
 import com.mjc.school.repository.interfaces.BaseEntity;
+import com.mjc.school.repository.model.AuthorModel;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import java.lang.reflect.ParameterizedType;
@@ -41,12 +43,19 @@ public abstract class AbstractDBRepository<T extends BaseEntity<K>, K> implement
 
         CriteriaQuery<T> select = criteriaQuery.select(root);
         CriteriaQuery<T> ordered;
-
+if (sort[0].equalsIgnoreCase("author")) {
+    Join<T, AuthorModel> authorJoin = root.join("authorModel");
+    if (sort[1].equalsIgnoreCase("ASC")) {
+        ordered = select.orderBy(criteriaBuilder.asc(authorJoin.get("name")));
+    } else {
+        ordered = select.orderBy(criteriaBuilder.desc(authorJoin.get("name")));
+    }
+} else {
         if (sort[1].equalsIgnoreCase("ASC") && sort[1] != null) {
             ordered = select.orderBy(criteriaBuilder.asc(root.get(sort[0])));
         } else {
             ordered = select.orderBy(criteriaBuilder.desc(root.get(sort[0])));
-        }
+        }}
         TypedQuery<T> result = entityManager.createQuery(ordered).setFirstResult(page * size).setMaxResults(size);
         try {
             return result.getResultList();

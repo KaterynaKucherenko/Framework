@@ -135,15 +135,13 @@ public class NewsController implements NewsControllerInterface<NewsDtoRequest, N
     })
     public EntityModel<NewsPageDtoResponse> readListOfNewsByParams(
             @RequestParam(name = "tag_name", required = false) List<String> tagName,
-            @RequestParam(name = "tag_id", required = false)
-            @ApiParam(type = "Long", format = "int64")
-            List<Long> tagId,
+            @RequestParam(name = "tag_id", required = false) List<Long> tagId,
             @RequestParam(name = "author_name", required = false) String authorName,
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "content", required = false) String content,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam (name = "sortBy", defaultValue = "createDate,desc") String sortBy) {
+            @RequestParam (name = "sortBy", defaultValue = "createDate,dsc") String sortBy) {
 NewsPageDtoResponse response = newsService.readListOfNewsByParams(tagName, tagId, authorName, title, content, page, pageSize, sortBy);
         EntityModel<NewsPageDtoResponse> model = EntityModel.of(response);
         return model;

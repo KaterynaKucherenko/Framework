@@ -119,7 +119,7 @@ mockMvc.perform(delete("/api/v1/author/{id}", 2))
                 .andExpect(status().isUnauthorized());
     }
     @Test
-    @WithMockUser (authorities = "ROLE_USER")
+    @WithMockUser(authorities = "ROLE_USER")
     public void forbiddenDeleteAuthorTest() throws Exception {
         when(authorService.deleteById(authorDtoResponse.id())).thenReturn(true);
         mockMvc.perform(delete("/api/v1/author/{id}", 2))

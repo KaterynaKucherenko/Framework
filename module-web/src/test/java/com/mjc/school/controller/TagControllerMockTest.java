@@ -117,7 +117,7 @@ public class TagControllerMockTest {
                 .andExpect(status().isUnauthorized());
     }
     @Test
-    @WithMockUser (authorities = "ROLE_USER")
+    @WithMockUser(authorities = "ROLE_USER")
     public void forbiddenDeleteTagTest() throws Exception {
         when(tagsService.deleteById(tagDtoResponse.id())).thenReturn(true);
         mockMvc.perform(delete("/api/v1/tag/{id}", 1))

@@ -14,9 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,15 +85,14 @@ public class NewsControllerMockTest {
                         .param("size", "5")
                         .param("sortBy", "createDate,desc"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", equalTo(1)))
-                .andExpect(jsonPath("$[0].title", equalTo(NEWS_TITLE)))
-                .andExpect(jsonPath("$[0].content", equalTo(NEWS_CONTENT)))
-                .andExpect(jsonPath("$[0].authorDtoResponse.name", equalTo(AUTHOR_NAME)))
-                .andExpect(jsonPath("$[0].tagList[0].id", equalTo(1)))
-                .andExpect(jsonPath("$[0].tagList[0].name", equalTo("videoFiles")))
-                .andExpect(jsonPath("$[1].authorDtoResponse.name", equalTo("Amicia")))
-                .andExpect(jsonPath("$[1].commentList[1].content", equalTo("Incredible!")));
+                .andExpect(jsonPath("$.newsList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.newsList[0].title", equalTo(NEWS_TITLE)))
+                .andExpect(jsonPath("$.newsList[0].content", equalTo(NEWS_CONTENT)))
+                .andExpect(jsonPath("$.newsList[0].authorDtoResponse.name", equalTo(AUTHOR_NAME)))
+                .andExpect(jsonPath("$.newsList[0].tagList[0].id", equalTo(1)))
+                .andExpect(jsonPath("$.newsList[0].tagList[0].name", equalTo("videoFiles")))
+                .andExpect(jsonPath("$.newsList[1].authorDtoResponse.name", equalTo("Amicia")))
+                .andExpect(jsonPath("$.newsList[1].commentList[1].content", equalTo("Incredible!")));
     }
 
     @Test
@@ -143,7 +142,7 @@ public class NewsControllerMockTest {
     }
 
     @Test
-    @WithMockUser(authorities = "ROLE_ADMIN")
+    @WithMockUser (authorities = "ROLE_ADMIN")
     public void deleteNewsTest() throws Exception {
         when(newsService.deleteById(newsDtoResponse.id())).thenReturn(true);
         mockMvc.perform(delete("/api/v1/news/{id}", 1))
@@ -184,8 +183,9 @@ public class NewsControllerMockTest {
 
     @Test
     public void readListOfNewsByParams() throws Exception {
-        when(newsService.readListOfNewsByParams(any(), any(), anyString(), anyString(), anyString()))
-                .thenReturn(List.of(newsDtoResponse));
+        NewsPageDtoResponse newsPageDtoResponse = new NewsPageDtoResponse( List.of(newsDtoResponse),1L);
+        when(newsService.readListOfNewsByParams(any(), any(), anyString(), anyString(), anyString(), anyInt(), anyInt(), any()))
+                .thenReturn(newsPageDtoResponse);
         mockMvc.perform(get("/api/v1/news/search")
                         .param("tag_name", "videoFiles", "audioFiles")
                         .param("tag_id", String.valueOf(1L), String.valueOf(2L))
@@ -193,9 +193,9 @@ public class NewsControllerMockTest {
                         .param("title", "The Integrity")
                         .param("content", "The Populist Wave and Its Discontents"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title", equalTo(NEWS_TITLE)))
-                .andExpect(jsonPath("$[0].content", equalTo(NEWS_CONTENT)))
-                .andExpect(jsonPath("$[0].authorDtoResponse.name", equalTo(AUTHOR_NAME)))
-                .andExpect(jsonPath("$[0].tagList[1].id", equalTo(2)));
+                .andExpect(jsonPath("$.newsList[0].title", equalTo(NEWS_TITLE)))
+                .andExpect(jsonPath("$.newsList[0].content", equalTo(NEWS_CONTENT)))
+                .andExpect(jsonPath("$.newsList[0].authorDtoResponse.name", equalTo(AUTHOR_NAME)))
+                .andExpect(jsonPath("$.newsList[0].tagList[1].id", equalTo(2)));
     }
 }

@@ -1,4 +1,4 @@
-rootProject.name = 'stage3-module4-task'
+rootProject.name = 'News Manager App'
 
 include 'module-repository'
 include 'module-service'

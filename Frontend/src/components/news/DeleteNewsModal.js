@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import trashIcon from 'C:/Users/LEGION/my-news-react-app/news-application/src/components/news/images/trash-icon.png';
+import trashIcon from './images/trash-icon.png';
 
 import './DeleteNewsModal.css';
 

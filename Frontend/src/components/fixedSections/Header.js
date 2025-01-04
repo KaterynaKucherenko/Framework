@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
-import newsIcon from 'C:/Users/LEGION/my-news-react-app/news-application/src/components/news/images/news-icon.png';
+import newsIcon from '../news/images/news-icon.png';
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

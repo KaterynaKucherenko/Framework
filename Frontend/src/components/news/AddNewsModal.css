@@ -1,0 +1,11 @@
+.style-modal{
+    background-color: rgb(248, 246, 246);
+}
+
+.button1{
+    border-radius: 24px;
+}
+.delete-borders{
+    border-bottom: none;
+    border-top: none;
+}

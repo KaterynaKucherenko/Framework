@@ -1,0 +1,50 @@
+.header {
+    background-color: #021f3b;
+    color: white;
+    padding: px;
+    width: 100%;
+    position: fixed;
+    z-index: 5;
+
+}
+.nav-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%; 
+}
+.nav-left {
+    display: flex;
+    gap: 10px;
+    align-items: center; 
+}
+
+
+.nav-right {
+    display: flex;
+    gap: 20px; 
+    align-items: center;
+    margin-right: 20px;
+}
+.navbar-brand{
+    font-family: "Breakers W00 Ultra"; 
+    font-size: 20px !important; 
+    
+   
+}
+    .nav-link  {
+    color: white;
+    text-decoration: none;
+    margin-left: 30px;
+    font-size: 20px !important;
+    font-family: 'Univers Next Pro', sans-serif;
+    text-transform: uppercase;
+}
+.news-icon {
+    width: 60px;
+    height: auto;
+    margin-bottom: 2px;
+    margin-left: 10px;
+    margin-right: 1px;
+  
+  }

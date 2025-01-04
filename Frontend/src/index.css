@@ -1,0 +1,42 @@
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.container-fluid {
+  min-height: 100vh; /* Ensure container height takes the full viewport */
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 0; /* Fills the remaining space between navbar and footer */
+  
+}
+.footer {
+  background-color: #021f3b;
+  color: rgb(172, 172, 172);
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  font-size: 25px;
+  font-family: 'Univers Next Pro', sans-serif;
+  z-index: 5;
+ 
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #a5baef;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 50px; 
+  padding-bottom: 50px; 
+  
+}
